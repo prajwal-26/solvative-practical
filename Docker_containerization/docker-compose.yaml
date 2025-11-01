@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: nginx_webapp
+    ports:
+      - "8080:80"
+    restart: always
+
