@@ -1,0 +1,36 @@
+---
+- name: Install Apache2, MySQL, Docker, and run Nginx container
+  hosts: ubuntu_servers
+  become: yes
+  tasks:
+    - name: Update and install required packages
+      apt:
+        name:
+          - apache2
+          - mysql-server
+          - docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: ephemeral directory for container data
+      file:
+        path: /mnt/ephemeral/nginx_data
+        state: directory
+
+    - name: Run Nginx container with ephemeral storage
+      community.docker.docker_container:
+        name: nginx_ephemeral
+        image: nginx
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:80"
+        volumes:
+          - /mnt/ephemeral/nginx_data:/usr/share/nginx/html
+
